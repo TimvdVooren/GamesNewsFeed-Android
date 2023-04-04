@@ -14,7 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.HiltAndroidApp
 import tick.nonprofit.gamesnewsfeed.presentation.subscribed_games.GameListScreen
-import tick.nonprofit.gamesnewsfeed.presentation.views.SearchScreen
+import tick.nonprofit.gamesnewsfeed.presentation.search_game.SearchScreen
 
 @HiltAndroidApp
 class GamesNewsfeedApp : Application() {

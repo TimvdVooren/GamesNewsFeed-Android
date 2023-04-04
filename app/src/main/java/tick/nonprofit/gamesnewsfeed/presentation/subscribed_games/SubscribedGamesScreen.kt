@@ -18,12 +18,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import tick.nonprofit.gamesnewsfeed.GamesNewsfeedApp
 import tick.nonprofit.gamesnewsfeed.domain.model.Game
+import tick.nonprofit.gamesnewsfeed.presentation.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameListScreen(navController: NavController) {
-    val viewModel: SubscribedGamesViewModel = hiltViewModel()
-    val state by viewModel.state.collectAsState()
+    val viewModel: MainViewModel = hiltViewModel()
+    val gameList by viewModel.subscribedGames.collectAsState()
 
     Scaffold(
         floatingActionButton = {
@@ -38,15 +39,15 @@ fun GameListScreen(navController: NavController) {
                 .padding(it)
         ) {
 
-            if (state.subscribedGames.isNotEmpty()) {
+            if (gameList.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(state.subscribedGames.size) { i ->
-                        ListItem(state.subscribedGames[i])
+                    items(gameList.size) { i ->
+                        ListItem(gameList[i])
                     }
                 }
             } else {
