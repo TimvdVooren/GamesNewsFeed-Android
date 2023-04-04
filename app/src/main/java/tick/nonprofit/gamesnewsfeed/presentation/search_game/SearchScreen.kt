@@ -1,4 +1,4 @@
-package tick.nonprofit.gamesnewsfeed.views
+package tick.nonprofit.gamesnewsfeed.presentation.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import tick.nonprofit.gamesnewsfeed.viewmodels.SearchViewModel
+import tick.nonprofit.gamesnewsfeed.presentation.search_game.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

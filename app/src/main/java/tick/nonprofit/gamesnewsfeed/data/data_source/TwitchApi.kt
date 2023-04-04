@@ -1,4 +1,4 @@
-package tick.nonprofit.gamesnewsfeed.data
+package tick.nonprofit.gamesnewsfeed.data.data_source
 
 import com.google.gson.JsonObject
 import retrofit2.Response

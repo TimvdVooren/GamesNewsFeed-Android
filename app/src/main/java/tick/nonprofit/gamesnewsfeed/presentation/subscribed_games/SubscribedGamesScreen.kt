@@ -1,4 +1,4 @@
-package tick.nonprofit.gamesnewsfeed.views
+package tick.nonprofit.gamesnewsfeed.presentation.subscribed_games
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -7,30 +7,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import tick.nonprofit.gamesnewsfeed.GamesNewsfeedApp
-import tick.nonprofit.gamesnewsfeed.data.Game
-import tick.nonprofit.gamesnewsfeed.ui.theme.GamesNewsfeedTheme
-import tick.nonprofit.gamesnewsfeed.viewmodels.GameListViewModel
+import tick.nonprofit.gamesnewsfeed.domain.model.Game
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameListScreen(navController: NavController) {
-    val viewModel: GameListViewModel = hiltViewModel()
+    val viewModel: SubscribedGamesViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
 
     Scaffold(
         floatingActionButton = {
             NewSubscriptionButton(onClick = {
-                viewModel.onNewSubscriptionClick()
                 navController.navigate(GamesNewsfeedApp.NavRoutes.Search.name)
             })
         }
@@ -40,15 +37,26 @@ fun GameListScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(it)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(viewModel.gameList.size) { i ->
-                    ListItem(viewModel.gameList[i])
+
+            if (state.subscribedGames.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(state.subscribedGames.size) { i ->
+                        ListItem(state.subscribedGames[i])
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "No games were found, subscribe to a new game")
                 }
             }
         }
@@ -86,20 +94,4 @@ fun NewSubscriptionButton(onClick: () -> Unit, isExpanded: Boolean = true) {
         expanded = isExpanded,
         containerColor = MaterialTheme.colorScheme.primary,
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    GamesNewsfeedTheme {
-        ListItem(Game("God of War", 1011999))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun FabPreview() {
-    GamesNewsfeedTheme {
-        NewSubscriptionButton({})
-    }
 }
