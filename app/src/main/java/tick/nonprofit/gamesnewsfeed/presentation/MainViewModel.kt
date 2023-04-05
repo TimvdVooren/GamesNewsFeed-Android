@@ -30,10 +30,14 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val GAME_LIST = "game_list"
     private val AUTO_COMPLETE_GAME_NAMES = "auto_complete_game_names"
+    private val SELECTED_GAME_NAME = "selected_game_name"
+    private val SEARCH_BOX_EXPANDED = "search_box_expanded"
     private val SUBSCRIBE_SUCCESS = "subscribe_success"
 
     val subscribedGames = savedStateHandle.getStateFlow(GAME_LIST, emptyList<Game>())
     val autoCompleteGameNames = savedStateHandle.getStateFlow(AUTO_COMPLETE_GAME_NAMES, emptyList<String>())
+    val selectedGameName = savedStateHandle.getStateFlow(SELECTED_GAME_NAME, "")
+    val isSearchBoxExpanded = savedStateHandle.getStateFlow(SEARCH_BOX_EXPANDED, false)
     val isSubscribeSuccessful = savedStateHandle.getStateFlow(SUBSCRIBE_SUCCESS, false)
     var getGamesJob: Job? = null
 
@@ -78,14 +82,12 @@ class MainViewModel @Inject constructor(
                 val body = IgdbApi.generateBody(bodyText)
                 val response = igdbApi.fetchGameByName(IgdbApi.getHeaderMap(), body)
 
-                val autoCompleteGameNames = emptyList<String>().toMutableList()
+                val gameNames = emptyList<String>().toMutableList()
                 response.body()?.asJsonArray?.forEach { json ->
-                    val gameName = json.asJsonObject.get("name").toString()
-                    autoCompleteGameNames.add(gameName)
+                    val gameName = json.asJsonObject.get("name").asString
+                    gameNames.add(gameName)
                 }
-                savedStateHandle[AUTO_COMPLETE_GAME_NAMES] = autoCompleteGameNames
-                Log.d("AUTO_COMPLETE", autoCompleteGameNames.toString())
-
+                savedStateHandle[AUTO_COMPLETE_GAME_NAMES] = gameNames
             } catch (e: Exception) {
                 Log.e("MainViewModel", "searchGamesIncludingString: ", e)
             }
@@ -111,6 +113,18 @@ class MainViewModel @Inject constructor(
     private fun subscribeToGame(game: Game) {
         viewModelScope.launch {
             gameUseCases.addGame(game)
+        }
+    }
+
+    fun updateSelectedName(selectedGameName: String) {
+        viewModelScope.launch {
+            savedStateHandle[SELECTED_GAME_NAME] = selectedGameName
+        }
+    }
+
+    fun setSearchBoxExpandedState(isExpanded: Boolean) {
+        viewModelScope.launch {
+            savedStateHandle[SEARCH_BOX_EXPANDED] = isExpanded
         }
     }
 }
