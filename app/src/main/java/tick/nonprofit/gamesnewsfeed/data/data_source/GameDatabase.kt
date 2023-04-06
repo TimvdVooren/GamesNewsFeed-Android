@@ -6,7 +6,7 @@ import tick.nonprofit.gamesnewsfeed.domain.model.Game
 
 @Database(
     entities = [Game::class],
-    version = 1
+    version = 3
 )
 abstract class GameDatabase: RoomDatabase() {
 

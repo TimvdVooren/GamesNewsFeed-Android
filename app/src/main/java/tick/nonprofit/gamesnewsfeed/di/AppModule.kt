@@ -27,10 +27,8 @@ object AppModule {
     @Singleton
     fun provideGameDatabase(app: Application): GameDatabase {
         return Room.databaseBuilder(
-            app,
-            GameDatabase::class.java,
-            GameDatabase.DATABASE_NAME
-        ).build()
+            app, GameDatabase::class.java, GameDatabase.DATABASE_NAME
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
@@ -43,29 +41,21 @@ object AppModule {
     @Singleton
     fun provideGameUseCases(repository: GameRepository): GameUseCases {
         return GameUseCases(
-            GetGames(repository),
-            DeleteGame(repository),
-            AddGame(repository)
+            GetGames(repository), DeleteGame(repository), AddGame(repository)
         )
     }
 
     @Provides
     @Singleton
     fun provideTwitchApi(): TwitchApi {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(TwitchApi.BASE_URL)
-            .build()
-            .create(TwitchApi::class.java)
+        return Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(TwitchApi.BASE_URL).build().create(TwitchApi::class.java)
     }
 
     @Provides
     @Singleton
     fun provideIgdbApi(): IgdbApi {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(IgdbApi.BASE_URL)
-            .build()
-            .create(IgdbApi::class.java)
+        return Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(IgdbApi.BASE_URL).build().create(IgdbApi::class.java)
     }
 }

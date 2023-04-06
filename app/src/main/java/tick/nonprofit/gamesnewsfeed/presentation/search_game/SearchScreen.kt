@@ -1,12 +1,12 @@
 package tick.nonprofit.gamesnewsfeed.presentation.search_game
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,15 +17,14 @@ import androidx.navigation.NavController
 import tick.nonprofit.gamesnewsfeed.GamesNewsfeedApp
 import tick.nonprofit.gamesnewsfeed.presentation.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(navController: NavController) {
-    val viewModel: MainViewModel = hiltViewModel()
-    val isSubscribeSuccessful = viewModel.isSubscribeSuccessful.collectAsState().value
-
+fun SearchScreen(navController: NavController, viewModel: MainViewModel) {
+    val isSubscribeSuccessful by viewModel.isSubscribeSuccessful.collectAsState()
     if (isSubscribeSuccessful) {
         navController.popBackStack(GamesNewsfeedApp.NavRoutes.GameList.name, inclusive = false)
     }
+
+    viewModel.updateAppBar("Search for games")
 
     Column(
         modifier = Modifier
@@ -57,18 +56,18 @@ fun SearchScreen(navController: NavController) {
 @Composable
 fun AutoCompleteSearchBar(viewModel: MainViewModel) {
     val listItems by viewModel.autoCompleteGameNames.collectAsState()
-    val selectedName = viewModel.selectedGameName.collectAsState()
-    val expanded = viewModel.isSearchBoxExpanded.collectAsState()
+    val selectedName by viewModel.selectedGameName.collectAsState()
+    val expanded by viewModel.isSearchBoxExpanded.collectAsState()
 
     ExposedDropdownMenuBox(
-        expanded = expanded.value,
+        expanded = expanded,
         onExpandedChange = {
-            viewModel.setSearchBoxExpandedState(!expanded.value)
+            viewModel.setSearchBoxExpandedState(!expanded)
         }
     ) {
         OutlinedTextField(
             modifier = Modifier.menuAnchor(),
-            value = selectedName.value,
+            value = selectedName,
             onValueChange = {
                 viewModel.updateSelectedName(it)
                 if (it.trim().isNotBlank()) {
@@ -79,7 +78,7 @@ fun AutoCompleteSearchBar(viewModel: MainViewModel) {
             placeholder = { Text(text = "Enter a game name here") },
             trailingIcon = {
                 Icon(
-                    Icons.Default.Search,
+                    Icons.Rounded.Search,
                     contentDescription = "Search for games"
                 )
             },
@@ -88,7 +87,7 @@ fun AutoCompleteSearchBar(viewModel: MainViewModel) {
 
         if (listItems.isNotEmpty()) {
             ExposedDropdownMenu(
-                expanded = expanded.value,
+                expanded = expanded,
                 onDismissRequest = { viewModel.setSearchBoxExpandedState(false) }
             ) {
                 listItems.forEach { selectionOption ->
