@@ -22,6 +22,7 @@ fun SearchScreen(navController: NavController, viewModel: MainViewModel) {
     val isSubscribeSuccessful by viewModel.isSubscribeSuccessful.collectAsState()
     if (isSubscribeSuccessful) {
         navController.popBackStack(GamesNewsfeedApp.NavRoutes.GameList.name, inclusive = false)
+        viewModel.resetSearchScreen()
     }
 
     viewModel.updateAppBar("Search for games")

@@ -18,6 +18,7 @@ import tick.nonprofit.gamesnewsfeed.data.data_source.IgdbApi
 import tick.nonprofit.gamesnewsfeed.data.data_source.TwitchApi
 import tick.nonprofit.gamesnewsfeed.domain.model.Game
 import tick.nonprofit.gamesnewsfeed.domain.use_case.GameUseCases
+import tick.nonprofit.gamesnewsfeed.domain.util.LocalDateTimeConverter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -71,7 +72,10 @@ class MainViewModel @Inject constructor(
         getGamesJob?.cancel()
         getGamesJob = gameUseCases.getGames()
             .onEach { games ->
-                savedStateHandle[GAME_LIST] = games
+                savedStateHandle[GAME_LIST] =
+                    games.sortedByDescending {
+                        LocalDateTimeConverter.toDate(it.releaseDateTimeStamp)
+                    }
             }.launchIn(viewModelScope)
     }
 
@@ -145,6 +149,15 @@ class MainViewModel @Inject constructor(
     fun updateDetailedGame(game: Game) {
         viewModelScope.launch {
             savedStateHandle[DETAILED_GAME] = game
+        }
+    }
+
+    fun resetSearchScreen() {
+        viewModelScope.launch {
+            savedStateHandle[SUBSCRIBE_SUCCESS] = false
+            savedStateHandle[SEARCH_BOX_EXPANDED] = false
+            savedStateHandle[SELECTED_GAME_NAME] = ""
+            savedStateHandle[AUTO_COMPLETE_GAME_NAMES] = emptyList<String>()
         }
     }
 }
